@@ -6,13 +6,22 @@
   "configurations": [
 
     {
+      "name": "gui",
+      "type": "python",
+      "request": "launch",
+      "program": "./buvt.py",
+      "args": [],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
       "name": "compareTreeToMeta",
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      "args": ["compareTreeToMeta", "--fiDir", "~/progPython/buvt-SourceFs/Source", "-m", "buvt-meta.txt", "--leafFilterFirst", ".buvt-filterDB"],
-      //"args": ["compareTreeToMeta", "--fiDir", "~", "-m", "~/buvt-meta.txt", "--leafFilterFirst", ".buvt-filterDB"],
-      //"args": ["compareTreeToMeta", "--fiDir", "/run/media/magnus/myPassport", "-m", "/run/media/magnus/myPassport/buvt-meta.txt", "--leafFilterFirst", ".buvt-filterDB"],
+      "args": ["compareTreeToMeta", "--fiDir", "~/progPython/buvt-SourceFs/Source", "--leafFilterFirst", ".buvt-filterMS"],
+      //"args": ["compareTreeToMeta", "--fiDir", "~", "--leafFilterFirst", ".buvt-filterMS"],
+      //"args": ["compareTreeToMeta", "--fiDir", "/run/media/magnus/myPassport", "--leafFilterFirst", ".buvt-filterMS"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -21,9 +30,9 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      "args": ["syncTreeToMeta", "--fiDir", "~/progPython/buvt-SourceFs/Source", "-m", "buvt-meta.txt", "--leafFilterFirst", ".buvt-filterDB"],
-      //"args": ["syncTreeToMeta", "--fiDir", "~", "-m", "~/buvt-meta.txt", "--leafFilterFirst", ".buvt-filterDB"],
-      //"args": ["syncTreeToMeta", "--fiDir", "/run/media/magnus/myPassport", "-m", "/run/media/magnus/myPassport/buvt-meta.txt", "--leafFilterFirst", ".buvt-filterDB"],
+      "args": ["syncTreeToMeta", "--fiDir", "~/progPython/buvt-SourceFs/Source", "--leafFilterFirst", ".buvt-filterMS"],
+      //"args": ["syncTreeToMeta", "--fiDir", "~", "--leafFilterFirst", ".buvt-filterMS"],
+      //"args": ["syncTreeToMeta", "--fiDir", "/run/media/magnus/myPassport", "--leafFilterFirst", ".buvt-filterMS"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -31,8 +40,8 @@
 
 
     // #     On ~
-    // #   .buvt-filterDB
-    // # syncTreeToMeta    (or compareTreeToMeta + renameFinishToMeta)
+    // #   .buvt-filterMS
+    // # syncTreeToMeta    (or compareTreeToMeta + renameFinishToMeta ) (Note! "rename..." doesn't deal with created/deleted files)
     // #
     // #   .buvt-filter
     // # compareTreeToTree, (renameFinishToTree (OTO), renameFinishToTree (Additional) ...)    (or renameFinishToTree)
@@ -40,101 +49,148 @@
     // #
     // #
     // #     On myPassport
-    // #   .buvt-filterDB
+    // #   .buvt-filterMS
     // # syncTreeToMeta    (or compareTreeToMeta + renameFinishToMeta)
     // #
     // #   .buvt-filter-X
     // # compareTreeToTree, (renameFinishToTree (OTO), renameFinishToTree (Additional) ...)    (or renameFinishToTree) 
     // # syncTreeToTreeBrutal
     // #
-    // # compareTreeToST
+    // # compareTreeToMetaSTOnly
     
 
+
         // TreeToMeta
-// ./buvt.py compareTreeToMeta --fiDir ~ -m ~/buvt-meta.txt --leafFilterFirst .buvt-filterDB
-// ./buvt.py compareTreeToMeta --fiDir /run/media/magnus/myPassport -m /run/media/magnus/myPassport/buvt-meta.txt --leafFilterFirst .buvt-filterDB
-// ./buvt.py syncTreeToMeta --fiDir ~ -m ~/buvt-meta.txt --leafFilterFirst .buvt-filterDB
-// ./buvt.py syncTreeToMeta --fiDir /run/media/magnus/myPassport -m /run/media/magnus/myPassport/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMeta --fiDir ~ --leafFilterFirst .buvt-filterMS
+// ./buvt.py compareTreeToMeta --fiDir /run/media/magnus/myPassport --leafFilterFirst .buvt-filterMS
+// ./buvt.py syncTreeToMeta --fiDir ~ --leafFilterFirst .buvt-filterMS
+// ./buvt.py syncTreeToMeta --fiDir /run/media/magnus/myPassport --leafFilterFirst .buvt-filterMS
 
 
         // TreeToTree
 // ./buvt.py compareTreeToTree --fiDirSource ~ --fiDirTarget /run/media/magnus/myPassport/sync
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/myPassport/sync
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/myPassport/sync --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/myPassport/sync --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource ~ --fiDirTarget /run/media/magnus/myPassport/sync
 
 // ./buvt.py compareTreeToTree --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/SanDisk16G --leafFilterFirst .buvt-filter-16G
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/SanDisk16G
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/SanDisk16G --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/SanDisk16G --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/SanDisk16G --leafFilterFirst .buvt-filter-16G
 
 // ./buvt.py compareTreeToTree --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/san64 --leafFilterFirst .buvt-filter-64G
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/san64
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/san64 --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/san64 --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/san64 --leafFilterFirst .buvt-filter-64G
 
 // ./buvt.py compareTreeToTree --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/sd64 --leafFilterFirst .buvt-filter-64G
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/sd64
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/sd64 --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/sd64 --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/sd64 --leafFilterFirst .buvt-filter-64G
 
 // ./buvt.py compareTreeToTree --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/LACIE/synced --leafFilterFirst .buvt-filter-64G
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/LACIE/synced
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/LACIE/synced --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/LACIE/synced --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/LACIE/synced --leafFilterFirst .buvt-filter-64G
 
 // ./buvt.py compareTreeToTree --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/WD --leafFilterFirst .buvt-filter-64G
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/WD
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/WD --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/WD --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/WD --leafFilterFirst .buvt-filter-64G
 
 // ./buvt.py compareTreeToTree --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/freecom100 --leafFilterFirst .buvt-filter-64G
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/freecom100
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/freecom100 --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/freecom100 --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/freecom100 --leafFilterFirst .buvt-filter-64G
 
 // ./buvt.py compareTreeToTree --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/WD250 --leafFilterFirst .buvt-filter-100G
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/WD250
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/WD250 --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/WD250 --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/WD250 --leafFilterFirst .buvt-filter-100G
 
 // ./buvt.py compareTreeToTree --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/hitachi1000 --leafFilterFirst .buvt-filter-100G
 // ./buvt.py renameFinishToTree --fiDir /run/media/magnus/hitachi1000
-// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/hitachi1000 --file renameSuggestionsAdditional.txt
+// ./buvt.py renameFinishToTree --fiDir /run/media/magnus/hitachi1000 --leafFile renameAdditional.txt
 // ./buvt.py syncTreeToTreeBrutal --fiDirSource /run/media/magnus/myPassport --fiDirTarget /run/media/magnus/hitachi1000 --leafFilterFirst .buvt-filter-100G
 
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/myPassport/sync -m /run/media/magnus/myPassport/sync/buvt-meta.txt --leafFilterFirst .buvt-filterDB
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/SanDisk16G -m /run/media/magnus/SanDisk16G/buvt-meta.txt --leafFilterFirst .buvt-filterDB-16G
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/SanDisk16G/sync -m /run/media/magnus/SanDisk16G/sync/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/myPassport/sync --leafFilterFirst .buvt-filterMT
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/san64 -m /run/media/magnus/san64/buvt-meta.txt --leafFilterFirst .buvt-filterDB-64G
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/san64/sync -m /run/media/magnus/san64/sync/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/SanDisk16G --leafFilterFirst .buvt-filterMT-64G
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/SanDisk16G/sync --leafFilterFirst .buvt-filterMT
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/sd64 -m /run/media/magnus/sd64/buvt-meta.txt --leafFilterFirst .buvt-filterDB-64G
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/sd64/sync -m /run/media/magnus/sd64/sync/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/san64 --leafFilterFirst .buvt-filterMT-64G
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/san64/sync --leafFilterFirst .buvt-filterMT
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/LACIE/synced -m /run/media/magnus/LACIE/synced/buvt-meta.txt --leafFilterFirst .buvt-filterDB-64G
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/LACIE/synced -m /run/media/magnus/LACIE/synced/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/sd64 --leafFilterFirst .buvt-filterMT-64G
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/sd64/sync --leafFilterFirst .buvt-filterMT
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/WD -m /run/media/magnus/WD/buvt-meta.txt --leafFilterFirst .buvt-filterDB-64G
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/WD -m /run/media/magnus/WD/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/LACIE/synced --leafFilterFirst .buvt-filterMT-64G
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/LACIE/synced --leafFilterFirst .buvt-filterMT
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/freecom100 -m /run/media/magnus/freecom100/buvt-meta.txt --leafFilterFirst .buvt-filterDB-64G
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/freecom100 -m /run/media/magnus/freecom100/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/WD --leafFilterFirst .buvt-filterMT-64G
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/WD --leafFilterFirst .buvt-filterMT
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/WD250 -m /run/media/magnus/WD250/buvt-meta.txt --leafFilterFirst .buvt-filterDB-100G
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/WD250 -m /run/media/magnus/WD250/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/freecom100 --leafFilterFirst .buvt-filterMT-64G
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/freecom100 --leafFilterFirst .buvt-filterMT
 
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/hitachi1000 -m /run/media/magnus/hitachi1000/buvt-meta.txt --leafFilterFirst .buvt-filterDB-100G
-// ./buvt.py compareTreeToST --fiDir /run/media/magnus/hitachi1000 -m /run/media/magnus/hitachi1000/buvt-meta.txt --leafFilterFirst .buvt-filterDB
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/WD250 --leafFilterFirst .buvt-filterMT-100G
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/WD250 --leafFilterFirst .buvt-filterMT
+
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/hitachi1000 --leafFilterFirst .buvt-filterMT-100G
+// ./buvt.py compareTreeToMetaSTOnly --fiDir /run/media/magnus/hitachi1000 --leafFilterFirst .buvt-filterMT
 
 
-// ./buvt.py checkSummarizeMissing --fiDir /run/media/magnus/SanDisk16G -m /run/media/magnus/SanDisk16G/buvt-meta.txt
-// ./buvt.py checkSummarizeMissing --fiDir /run/media/magnus/SanDisk16G/sync -m /run/media/magnus/SanDisk16G/sync/buvt-meta.txt
-// ./buvt.py check --fiDir /run/media/magnus/SanDisk16G -m /run/media/magnus/SanDisk16G/buvt-meta.txt
-// ./buvt.py check --fiDir /run/media/magnus/SanDisk16G/sync -m /run/media/magnus/SanDisk16G/sync/buvt-meta.txt
+// ./buvt.py checkSummarizeMissing --fiDir /run/media/magnus/SanDisk16G
+// ./buvt.py checkSummarizeMissing --fiDir /run/media/magnus/SanDisk16G/sync
+// ./buvt.py check --fiDir /run/media/magnus/SanDisk16G
+// ./buvt.py check --fiDir /run/media/magnus/SanDisk16G/sync
+
+
+
+// ===My atempts to make argument categories for neutralino vesion===
+// {
+//   "Source":[
+//     {
+//       "fiDirSource":"",
+//       "fiMeta":"",
+//       "leafFilterFirst_M":"",
+//       "Target":[
+//         {
+//           "fiDirTarget":"",
+//           "leafFilterFirst":""
+//         }
+//       ]
+//     }
+//   ]
+// }
+
+
+// {
+//   "WOID":[{"fiDirSource":"", "fiDirTarget":"", "leafFilterFirst":""}],
+//   "WID": [
+//     {
+//       "fiDirSource":"",         // 3) 
+//       "fiDirTarget":"",         // 3)
+//       "leafFilterFirst":""      // 3)
+//       "leafFilterFirst_M":"",   // 2)
+//       "fiMeta":"",              // 2)
+//     }
+//   ]
+// }
+
+// 1) Required when in WOID mode
+// 2) Required when in WID mode
+// 3) Required by both WOID and WID
+
+// ===Trying to summerize arguments of different commands===
+// fiDirSource, fiMeta, leafFilterFirstDB:       compareTreeToMeta, syncTreeToMeta
+// fiDirSource, fiDirTarget, leafFilterFirst:    compareTreeToTree, syncTreeToTreeBrutal
+// fiDirTarget:                                  renameFinishToTree, renameFinishToTree --leafFile renameAdditional.txt
+// fiDirTarget, fiMeta, leafFilterFirstDB:       compareTreeToMetaSTOnly
+// fiDirTarget, fiMeta:                          checkSummarizeMissing, check
+
 
 
     {
@@ -142,8 +198,8 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      "args": ["compareTreeToTree", "--fiDirSource", "~/progPython/buvt-SourceFs/Source", "--fiDirTarget", "../buvt-TargetFs/Target"],
-      //"args": ["compareTreeToTree", "--fiDirSource", "~/progPython/buvt-SourceFs/Source", "--fiDirTarget", "/run/media/magnus/myPassport/buvt_folderForTest/mySync"],
+      //"args": ["compareTreeToTree", "--fiDirSource", "~/progPython/buvt-SourceFs/Source", "--fiDirTarget", "../buvt-TargetFs/Target"],
+      "args": ["compareTreeToTree", "--fiDirSource", "~/progPython/buvt-SourceFs/Source", "--fiDirTarget", "/run/media/magnus/myPassport/buvt_folderForTest/mySync"],
       //"args": ["compareTreeToTree", "--fiDirSource", "~", "--fiDirTarget", "/run/media/magnus/myPassport/sync"],
       //"args": ["compareTreeToTree", "--fiDirSource", "/run/media/magnus/myPassport", "--fiDirTarget", "/run/media/magnus/SanDisk16G", "--leafFilterFirst", ".buvt-filter-16G"],
       //"args": ["compareTreeToTree", "--fiDirSource", "/run/media/magnus/myPassport", "--fiDirTarget", "/run/media/magnus/san64", "--leafFilterFirst", ".buvt-filter-64G"],
@@ -180,8 +236,8 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      "args": ["renameFinishToTree", "--fiDir", "../buvt-TargetFs/Target"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest/mySync"],
+      //"args": ["renameFinishToTree", "--fiDir", "../buvt-TargetFs/Target"],
+      "args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest/mySync"],
       //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/sync"],
       //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/SanDisk16G"], 
       //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/san64"], 
@@ -198,16 +254,16 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      "args": ["renameFinishToTree", "--fiDir", "../buvt-TargetFs/Target", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest/mySync", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/sync", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/SanDisk16G", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/san64", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/LACIE/synced", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/WD", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/freecom100", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/WD250", "--file", "renameSuggestionsAdditional.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/hitachi1000", "--file", "renameSuggestionsAdditional.txt"],
+      "args": ["renameFinishToTree", "--fiDir", "../buvt-TargetFs/Target", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest/mySync", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/sync", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/SanDisk16G", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/san64", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/LACIE/synced", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/WD", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/freecom100", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/WD250", "--leafFile", "renameAdditional.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/hitachi1000", "--leafFile", "renameAdditional.txt"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -216,15 +272,16 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest/mySync", "--file", "renameDuplicateFinal.txt"],
-      "args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/sync", "--file", "renameDuplicateFinal.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/SanDisk16G", "--file", "renameDuplicateFinal.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/san64", "--file", "renameDuplicateFinal.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/LACIE/synced", "--file", "renameDuplicateFinal.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/WD", "--file", "renameDuplicateFinal.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/freecom100", "--file", "renameDuplicateFinal.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/WD250", "--file", "renameDuplicateFinal.txt"],
-      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/hitachi1000", "--file", "renameDuplicateFinal.txt"],
+      "args": ["renameFinishToTree", "--fiDir", "../buvt-TargetFs/Target", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest/mySync", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/myPassport/sync", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/SanDisk16G", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/san64", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/LACIE/synced", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/WD", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/freecom100", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/WD250", "--leafFile", "renameDuplicateFinal.txt"],
+      //"args": ["renameFinishToTree", "--fiDir", "/run/media/magnus/hitachi1000", "--leafFile", "renameDuplicateFinal.txt"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -233,8 +290,9 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
+      "args": ["renameFinishToTreeByFolder", "--fiDir", "../buvt-TargetFs/Target"], 
       //"args": ["renameFinishToTreeByFolder", "--fiDir", "/run/media/magnus/myPassport/sync"], 
-      "args": ["renameFinishToTreeByFolder", "--fiDir", "/run/media/magnus/SanDisk16G"], 
+      //"args": ["renameFinishToTreeByFolder", "--fiDir", "/run/media/magnus/SanDisk16G"], 
       //"args": ["renameFinishToTreeByFolder", "--fiDir", "/run/media/magnus/san64"], 
       "console": "integratedTerminal",
       "justMyCode": true
@@ -244,9 +302,9 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      //"args": ["renameFinishToMeta", "-m", "buvt-meta.txt"],
-      "args": ["renameFinishToMeta", "-m", "~/buvt-meta.txt"],
-      //"args": ["renameFinishToMeta", "-m", "/run/media/magnus/myPassport/buvt-meta.txt"],
+      "args": ["renameFinishToMeta", "--fiMeta", "buvt-meta.txt"],
+      //"args": ["renameFinishToMeta", "--fiMeta", "~/buvt-meta.txt"],
+      //"args": ["renameFinishToMeta", "--fiMeta", "/run/media/magnus/myPassport/buvt-meta.txt"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -255,30 +313,42 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      "args": ["renameFinishToMetaByFolder", "-m", "buvt-meta.txt"],
+      "args": ["renameFinishToMetaByFolder", "--fiMeta", "buvt-meta.txt"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
 
 
-
-
     {
-      "name": "compareTreeToST",
+      "name": "parseTreeNDump",
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      //"args": ["compareTreeToST", "--fiDir", "~/progPython/buvt-SourceFs/Source", "-m", "buvt-meta.txt"],
-      //"args": ["compareTreeToST", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest", "-m", "/run/media/magnus/myPassport/buvt_folderForTest/buvt-meta.txt"],
-      //"args": ["compareTreeToST", "--fiDir", "~", "-m", "~/buvt-meta.txt"],
-      //"args": ["compareTreeToST", "--fiDir", "/run/media/magnus/myPassport/sync", "-m", "/run/media/magnus/myPassport/sync/buvt-meta.txt", "--leafFilterFirst", ".buvt-filterDB"],
-      "args": ["compareTreeToST", "--fiDir", "/run/media/magnus/SanDisk16G", "-m", "/run/media/magnus/SanDisk16G/buvt-meta.txt", "--leafFilterFirst", ".buvt-filter-16G"],
-      //"args": ["compareTreeToST", "--fiDir", "/run/media/magnus/san64", "-m", "/run/media/magnus/san64/buvt-meta.txt", "--leafFilterFirst", ".buvt-filter-64G"],
-      //"args": ["compareTreeToST", "--fiDir", "/run/media/magnus/LACIE/synced", "-m", "/run/media/magnus/LACIE/synced/buvt-meta.txt", "--leafFilterFirst", ".buvt-filter-64G"],
-      //"args": ["compareTreeToST", "--fiDir", "/run/media/magnus/WD", "-m", "/run/media/magnus/WD/buvt-meta.txt", "--leafFilterFirst", ".buvt-filter-64G"],
-      //"args": ["compareTreeToST", "--fiDir", "/run/media/magnus/freecom100", "-m", "/run/media/magnus/freecom100/buvt-meta.txt", "--leafFilterFirst", ".buvt-filter-64G"],
-      //"args": ["compareTreeToST", "--fiDir", "/run/media/magnus/WD250", "-m", "/run/media/magnus/WD250/buvt-meta.txt", "--leafFilterFirst", ".buvt-filter-100G"],
-      //"args": ["compareTreeToST", "--fiDir", "/run/media/magnus/hitachi1000", "-m", "/run/media/magnus/hitachi1000/buvt-meta.txt", "--leafFilterFirst", ".buvt-filter-100G"],
+      "args": ["parseTreeNDump", "--fiDir", "~/progPython/buvt-SourceFs/Source"],
+      //"args": ["parseTreeNDump", "--boUseFilter", "1", "--fiDir", "~/progPython/buvt-TargetFs/Target"],
+      //"args": ["parseTreeNDump", "--boUseFilter", "1", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest/mySync"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    
+
+
+    {
+      "name": "compareTreeToMetaSTOnly",
+      "type": "python",
+      "request": "launch",
+      "program": "./buvt.py",
+      "args": ["compareTreeToMetaSTOnly", "--fiDir", "~/progPython/buvt-SourceFs/Source", "--leafFilterFirst", ".buvt-filterMT"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest", "--leafFilterFirst", ".buvt-filterMT"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "~", "--leafFilterFirst", ".buvt-filterMT"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/myPassport/sync", "--leafFilterFirst", ".buvt-filterMT"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/SanDisk16G", "--leafFilterFirst", ".buvt-filterMT-16G"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/san64", "--leafFilterFirst", ".buvt-filterMT-64G"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/LACIE/synced", "--leafFilterFirst", ".buvt-filterMT-64G"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/WD", "--leafFilterFirst", ".buvt-filterMT-64G"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/freecom100", "--leafFilterFirst", ".buvt-filterMT-64G"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/WD250", "--leafFilterFirst", ".buvt-filterMT-100G"],
+      //"args": ["compareTreeToMetaSTOnly", "--fiDir", "/run/media/magnus/hitachi1000", "--leafFilterFirst", ".buvt-filterMT-100G"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -303,9 +373,9 @@
       "request": "launch",
       //"program": "${file}",
       "program": "./buvt.py",
-      //"args": ["convertHashcodeFileToMeta", "--fiDir", "~/progPython/buvt-SourceFs/Source", "-h", "hashcodes.txt", "-m", "buvt-meta.txt"],
-      "args": ["convertHashcodeFileToMeta", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest", "-h", "/run/media/magnus/myPassport/buvt_folderForTest/hashcodes.txt", "-m", "/run/media/magnus/myPassport/buvt_folderForTest/buvt-meta.txt"],
-      //"args": ["convertHashcodeFileToMeta", "--fiDir", "/run/media/magnus/myPassport", "-h", "/run/media/magnus/myPassport/hashcodes.txt", "-m", "/run/media/magnus/myPassport/buvt-meta.txt"],
+      "args": ["convertHashcodeFileToMeta", "--fiDir", "~/progPython/buvt-SourceFs/Source", "-h", "hashcodes.txt", "--fiMeta", "buvt-meta.txt"],
+      //"args": ["convertHashcodeFileToMeta", "--fiDir", "/run/media/magnus/myPassport/buvt_folderForTest", "-h", "/run/media/magnus/myPassport/buvt_folderForTest/hashcodes.txt", "--fiMeta", "/run/media/magnus/myPassport/buvt_folderForTest/buvt-meta.txt"],
+      //"args": ["convertHashcodeFileToMeta", "--fiDir", "/run/media/magnus/myPassport", "-h", "/run/media/magnus/myPassport/hashcodes.txt", "--fiMeta", "/run/media/magnus/myPassport/buvt-meta.txt"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -315,9 +385,9 @@
       "request": "launch",
       //"program": "${file}",
       "program": "./buvt.py",
-      //"args": ["convertMetaToHashcodeFile",  "-h", "hashcodes.txt", "-m", "buvt-meta.txt"],
-      //"args": ["convertMetaToHashcodeFile",  "-h", "~/hashcodes.txt", "-m", "~/buvt-meta.txt"],
-      "args": ["convertMetaToHashcodeFile", "-h", "/run/media/magnus/myPassport/hashcodes.txt", "-m", "/run/media/magnus/myPassport/buvt-meta.txt"],
+      //"args": ["convertMetaToHashcodeFile",  "-h", "hashcodes.txt", "--fiMeta", "buvt-meta.txt"],
+      //"args": ["convertMetaToHashcodeFile",  "-h", "~/hashcodes.txt", "--fiMeta", "~/buvt-meta.txt"],
+      "args": ["convertMetaToHashcodeFile", "-h", "/run/media/magnus/myPassport/hashcodes.txt", "--fiMeta", "/run/media/magnus/myPassport/buvt-meta.txt"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -327,8 +397,8 @@
       "request": "launch",
       //"program": "${file}",
       "program": "./buvt.py",
-      //"args": ["moveMeta",  "--fiMetaS", "buvt-meta.txt", "--fiDirT", "/run/media/magnus/myPassport/buvt_folderForTest/mySync", "--fiMetaOther", "/run/media/magnus/myPassport/buvt_folderForTest/buvt-meta.txt", "--flPrepend", "mySync/"],
-      "args": ["moveMeta",  "--fiMetaS", "~/buvt-meta.txt", "--fiDirT", "/run/media/magnus/myPassport/sync", "--fiMetaOther", "/run/media/magnus/myPassport/buvt-meta.txt", "--flPrepend", "sync/"],
+      "args": ["moveMeta",  "--fiMetaS", "buvt-meta.txt", "--fiDirT", "/run/media/magnus/myPassport/buvt_folderForTest/mySync", "--fiMetaOther", "/run/media/magnus/myPassport/buvt_folderForTest/buvt-meta.txt", "--flPrepend", "mySync/"],
+      //"args": ["moveMeta",  "--fiMetaS", "~/buvt-meta.txt", "--fiDirT", "/run/media/magnus/myPassport/sync", "--fiMetaOther", "/run/media/magnus/myPassport/buvt-meta.txt", "--flPrepend", "sync/"],
       //"args": ["moveMeta",  "--fiMetaS", "/run/media/magnus/myPassport/buvt-meta.txt", "--fiDirT", "/run/media/magnus/SanDisk16G", "--fiMetaOther", "/run/media/magnus/SanDisk16G/buvt-meta.txt"],
       //"args": ["moveMeta",  "--fiMetaS", "/run/media/magnus/myPassport/buvt-meta.txt", "--fiDirT", "/run/media/magnus/san64", "--fiMetaOther", "/run/media/magnus/san64/buvt-meta.txt"],
       "console": "integratedTerminal",
@@ -350,9 +420,9 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      //"args": ["changeIno", "-m", "buvt-meta.txt", "--fiDir", "~/progPython/buvt-SourceFs/Source"],
-      //"args": ["changeIno", "-m", "buvt-meta.txt", "--fiDir", "/run/media/magnus/myPassport/sync"],
-      "args": ["changeIno", "-m", "~/buvt-meta.txt", "--fiDir", "~"],
+      //"args": ["changeIno", "--fiMeta", "buvt-meta.txt", "--fiDir", "~/progPython/buvt-SourceFs/Source"],
+      //"args": ["changeIno", "--fiMeta", "buvt-meta.txt", "--fiDir", "/run/media/magnus/myPassport/sync"],
+      "args": ["changeIno", "--fiMeta", "~/buvt-meta.txt", "--fiDir", "~"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -361,9 +431,9 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      //"args": ["utilityMatchTreeAndMeta", "-m", "buvt-meta.txt", "--fiDir", "~/progPython/buvt-SourceFs/Source"],
-      //"args": ["utilityMatchTreeAndMeta", "-m", "buvt-meta.txt", "--fiDir", "/run/media/magnus/myPassport/sync"],
-      "args": ["utilityMatchTreeAndMeta", "-m", "~/buvt-meta.txt", "--fiDir", "~", "--flPrepend", "sync/"],
+      //"args": ["utilityMatchTreeAndMeta", "--fiMeta", "buvt-meta.txt", "--fiDir", "~/progPython/buvt-SourceFs/Source"],
+      //"args": ["utilityMatchTreeAndMeta", "--fiMeta", "buvt-meta.txt", "--fiDir", "/run/media/magnus/myPassport/sync"],
+      "args": ["utilityMatchTreeAndMeta", "--fiMeta", "~/buvt-meta.txt", "--fiDir", "~", "--flPrepend", "sync/"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -381,7 +451,7 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      "args": ["utilityAddToMetaStrName", "-m", "../buvt-TargetFs/buvt-meta.txt", "--flPrepend", "Target/"],
+      "args": ["utilityAddToMetaStrName", "--fiMeta", "../buvt-TargetFs/buvt-meta.txt", "--flPrepend", "Target/"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -390,10 +460,10 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      "args": ["check", "--fiDir", "~/progPython/buvt-SourceFs/Source", "-m", "buvt-meta.txt"],
-      //"args": ["check", "--fiDir", "/run/media/magnus/myPassport/sync", "-m", "buvt-meta.txt"],
-      //"args": ["check", "--fiDir", "~", "-m", "~/buvt-meta.txt"],
-      //"args": ["check", "--fiDir", "/run/media/magnus/SanDisk16G", "-m", "/run/media/magnus/SanDisk16G/buvt-meta.txt"],
+      "args": ["check", "--fiDir", "~/progPython/buvt-SourceFs/Source"],
+      //"args": ["check", "--fiDir", "/run/media/magnus/myPassport/sync"],
+      //"args": ["check", "--fiDir", "~"],
+      //"args": ["check", "--fiDir", "/run/media/magnus/SanDisk16G"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -402,15 +472,15 @@
       "type": "python",
       "request": "launch",
       "program": "./buvt.py",
-      //"args": ["checkSummarizeMissing", "--fiDir", "~/progPython/buvt-SourceFs/Source", "-m", "buvt-meta.txt"],
-      //"args": ["checkSummarizeMissing", "--fiDir", "~", "-m", "~/buvt-meta.txt"],
-      //"args": ["checkSummarizeMissing", "--fiDir", "/run/media/magnus/myPassport/sync", "-m", "buvt-meta.txt"],
-      "args": ["checkSummarizeMissing", "--fiDir", "/run/media/magnus/SanDisk16G", "-m", "/run/media/magnus/SanDisk16G/buvt-meta.txt"],
+      "args": ["checkSummarizeMissing", "--fiDir", "~/progPython/buvt-SourceFs/Source"],
+      //"args": ["checkSummarizeMissing", "--fiDir", "~"],
+      //"args": ["checkSummarizeMissing", "--fiDir", "/run/media/magnus/myPassport/sync"],
+      //"args": ["checkSummarizeMissing", "--fiDir", "/run/media/magnus/SanDisk16G"],
       "console": "integratedTerminal",
       "justMyCode": true
     },
-    // python -m cProfile -o file.prof ./buvt.py checkSummarizeMissing --fiDir ~/progPython/buvt-SourceFs/Source -m buvt-meta.txt
-    // python -m cProfile -o file.prof ./buvt.py checkSummarizeMissing --fiDir /run/media/magnus/SanDisk16G -m /run/media/magnus/SanDisk16G/buvt-meta.txt
+    // python -m cProfile -o file.prof ./buvt.py checkSummarizeMissing --fiDir ~/progPython/buvt-SourceFs/Source
+    // python -m cProfile -o file.prof ./buvt.py checkSummarizeMissing --fiDir /run/media/magnus/SanDisk16G
     {
       "name": "deleteResultFiles",
       "type": "python",

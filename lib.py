@@ -4,14 +4,82 @@ import sys
 import traceback
 import inspect
 import math
+import hashlib
+import pathlib
+import numpy as np
 
 
-def utf8len(s):
-  return len(s.encode('utf-8'))
-  
+charF='\\' if(sys.platform=="win32") else '/'
+
+
+
+ANSI_CURSOR_SAVE="\0337"
+ANSI_CURSOR_RESTORE="\0338"
+ANSI_CLEAR_BELOW="\033[J"
+
+ANSI_FONT_CLEAR="\033[0m"
+ANSI_FONT_BOLD="\033[1m"
+def ANSI_CURSOR_UP(n):      return "\033["+str(n)+"A"
+def ANSI_CURSOR_DOWN(n):    return "\033["+str(n)+"B"
+ANSI_CLEAR_RIGHT="\033[K"
+ANSI_CURSORUP="\033[A"
+ANSI_CURSORDN="\033[B"
+
+MAKESPACE_N_SAVE="\n\n"+ANSI_CURSOR_UP(2)+ANSI_CURSOR_SAVE
+MY_RESET=ANSI_CURSOR_RESTORE+ANSI_CLEAR_BELOW
+
+
+class MyConsole:
+  def __init__(self): pass
+  def clear(self): pass  
+  def save(self): print(ANSI_CURSOR_SAVE, end=''); return self
+  def restore(self): print(ANSI_CURSOR_RESTORE, end=''); return self
+  def clearBelow(self): print(ANSI_CLEAR_BELOW, end=''); return self
+  def cursorUpN(self,n): print("\033["+str(n)+"A", end='');  return self
+  def cursorUp(self): self.cursorUpN(1);  return self
+
+  def makeSpaceNSave(self):print("\n\n"+ANSI_CURSOR_UP(2)+ANSI_CURSOR_SAVE, end='');  return self
+  def myReset(self):print(ANSI_CURSOR_RESTORE+ANSI_CLEAR_BELOW, end=''); return self
+  #def setCur(self):  return self   #place_info() text.see(END)
+  def print(self, str): print(str, end=''); return self
+  #def printNL(self, str): self.print(str+'\n'); return self
+  def printNL(self, str): print(str); return self
+  def log(self, str):print(str); return self
+  def error(self, str): 
+    if(isinstance(str, Error)):  str=str.message
+    elif(type(str)=='dict' and 'message' in str): str=str.message
+    #self.print("ERROR: "+str)
+    print("ERROR: "+str)
+    return self
+    
+
+    
 def myMD5(strFileName):
   strhash=subprocess.check_output(['md5sum', strFileName])
   return strhash.split(None, 1)[0]
+
+
+
+def myMD5W(objEntry, fsDir):
+  strName=objEntry["strName"]; strType=objEntry["strType"]
+  strFileName=fsDir+charF+strName
+  if(sys.platform=="linux"):
+    if(strType=='l'):
+      arrCmd=['realpath', '--relative-to', fsDir, strFileName]
+      strData=subprocess.check_output(arrCmd)
+      strData=strData.split(None, 1)[0].decode("utf-8")
+      strhash=hashlib.md5(strData.encode('utf-8')).hexdigest()
+    else: 
+      strhash=subprocess.check_output(['md5sum', strFileName])
+      strhash=strhash.split(None, 1)[0].decode("utf-8")
+  elif(sys.platform=="win32"):
+    if(objEntry["size"]==0): return 'd41d8cd98f00b204e9800998ecf8427e';  # CertUtil doesn't seam to handle empty files
+    strhash=subprocess.check_output(['CertUtil', '-hashfile', strFileName, 'MD5'])
+    strhash=strhash.decode("utf-8").split('\r\n')[1]
+  else: return ['unhandled OS']
+  
+  return strhash
+
 
 def myErrorStack(strErr):
   exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -29,6 +97,22 @@ def myIndexOf(Arr,val):
   try: ind=Arr.index(val)
   except: ind=-1
   return ind
+
+
+def transpose(M):
+  nR=len(M); nC=len(M[0])
+  Out=[None]*nC
+  for j in range(0,nC): 
+    Out[j]=[None]*nR
+    for i in range(0,nR): Out[j][i]=M[i][j]; 
+  return Out
+
+def eInd(V, Ind): # return a array with values at indexes Ind
+  n=len(Ind); Out=[None]*n
+  for i, ind in enumerate(Ind):
+    Out[i]=V[ind]
+  return Out
+
 
 #######################################################################################
 # parseSSV   Parse "space separated data"
@@ -48,9 +132,9 @@ def parseSSV(fsDBFile):
   if(nData<=1): return None,  []
 
   strHead=arrInp[0].strip()
-  arrCol=strHead.split(None)
-  nCol=len(arrCol)
-  nSplit=nCol-1
+  arrHead=strHead.split(None)
+  nHead=len(arrHead)
+  nSplit=nHead-1
 
   for strRow in arrInp[1:]:
     strRow=strRow.strip()
@@ -58,10 +142,32 @@ def parseSSV(fsDBFile):
     if(strRow.startswith('#')): continue
     arrPart=strRow.split(None, nSplit)
     obj={}
-    for i, strCol in enumerate(arrCol): obj[strCol]=arrPart[i]
+    #for i, strHead in enumerate(arrHead): obj[strHead]=arrPart[i]
+    for strHead, part in zip(arrHead, arrPart): obj[strHead]=part
     arrOut.append(obj)
   
   return None, arrOut
+
+#def pluralS(n): return "" if(n==1) else "s"
+def pluralS(n,s="",p="s"): return s if(n==1) else p
+
+
+
+#######################################################################################
+# formatScalars
+#######################################################################################
+
+# i32TM i32TMNS i64TMNS strTMNS
+def roundMTime(t, charTRes):
+  if(charTRes=='n'): div=1
+  elif(charTRes=='u'): div=1000
+  elif(charTRes=='m'): div=1000000
+  elif(charTRes=='1'):   div=1000000000
+  elif(charTRes=='2'): div=2000000000
+  tCalc=(t//div)
+  tRound=tCalc*div
+  return tRound, tCalc
+
 
 
 #######################################################################################
@@ -214,3 +320,10 @@ def my_bisect_left(a, x, lo=0, hi=None, *, key=None, argExtra=None):
             else:
                 lo = mid + 1
     return lo
+
+
+def copySome(a, b, StrProp):
+  for strProp in StrProp:
+    v=b.get(strProp)
+    if(v is not None): a[strProp]=v
+  return a

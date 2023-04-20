@@ -1,8 +1,8 @@
 
 #Comment
 
--F Source
--F Target
+-f__R buvt-meta.*
+-f__R hashcodes.*
 -f__R rename.*
 -f__R result.*
 -F __pycache__

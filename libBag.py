@@ -1,16 +1,38 @@
 
 import bisect
 import copy
+import globvar
+
+from types import SimpleNamespace
+from difflib import SequenceMatcher
+import re
+
 from lib import *
+
+
+
+
+  # Some cb functions for testing
+def funStrShortest(rowA,rowB):
+  strA=rowA; l=len(strA); strB=rowB[:l]
+  if(strA<strB): return 1
+  elif(strA>strB): return -1
+  elif(strA==strB): return 0
+  else: globvar.myConsole.error("not lt, not gt and not equal???")
+def funInt(a,b):
+  if(a<b): return 1
+  elif(a>b): return -1
+  elif(a==b): return 0
+  else: globvar.myConsole.error("not lt, not gt and not equal???")
 
 
 #######################################################################################
 # extractMatching
-#   Each row must be unique with respect to the properties (given in arrKeyA/arrKeyB).
-#     That is no row of arrA (or arrB) can equal an other row of arrA (or arrB) when viewed through the properites (given in arrKeyA/arrKeyB).
+#   Each row must be unique with respect to the properties (given in arrKeyX).
+#     That is, no row of arrX can equal an other row of arrX when viewed through the properites (given in arrKeyX).
 #       Ex: arrA[0][arrKeyA[0]] can be equal to arrA[1][arrKeyA[0]] but not all properties of arrKeyA in arrA[0] and arrA[1] can be equal.
-#   arrA/arrB must be sorted (in an acending order) with respect to the keys (given in arrKeyA/arrKeyB).
-#   The elements of arrKeyA/arrKeyB have falling priority.
+#   arrX must be sorted (in an acending order) with respect to the keys (given in arrKeyX).
+#   The elements of arrKeyX have falling priority.
 #######################################################################################
 
 def extractMatchingF(arrA, arrB, fun): 
@@ -28,14 +50,14 @@ def extractMatchingF(arrA, arrB, fun):
     if(intVal>0): arrARem.append(rowA); iA+=1     # The row exist in arrA but not in arrB
     elif(intVal<0): arrBRem.append(rowB); iB+=1   # The row exist in arrB but not in arrA
     elif(intVal==0): arrAMatching.append(rowA); arrBMatching.append(rowB); iB+=1; iA+=1
-    else: print("error when comparing strings")
+    else: globvar.myConsole.error("error when comparing strings")
   return arrAMatching, arrBMatching, arrARem, arrBRem
 
 def extractMatching(arrA, arrB, arrKeyA, arrKeyB=None):
   if(arrKeyB==None): arrKeyB=arrKeyA
   lenKeyA=len(arrKeyA);  lenKeyB=len(arrKeyB);  
-  if(lenKeyA!=lenKeyB):  print("lenKeyA!=lenKeyB"); return 
-  if(lenKeyA==0 or lenKeyB==0):  print("lenKeyA==0 or lenKeyB==0"); return
+  if(lenKeyA!=lenKeyB):  globvar.myConsole.error("lenKeyA!=lenKeyB"); return 
+  if(lenKeyA==0 or lenKeyB==0):  globvar.myConsole.error("lenKeyA==0 or lenKeyB==0"); return
 
   lenA=len(arrA); lenB=len(arrB)
   boADict=isinstance(arrA[0], dict) if(lenA) else False 
@@ -70,8 +92,11 @@ def extractMatchingOneToManyUnsortedF(arrA, arrB, funVal, funB, funExtra):
     iBStart = my_bisect_left(arrBWork, valA, 0, lenBWork, key=funB, argExtra=argExtra)
     iBEnd = my_bisect_right(arrBWork, valA, iBStart, lenBWork, key=funB, argExtra=argExtra)
     if(iBStart!=iBEnd):
-      arrAMatching.append(rowA);  arrBMatching.append(arrBWork[iBStart:iBEnd]); arrBWork=arrBWork[:iBStart]+arrBWork[iBEnd:]
-    else: arrARem.append(rowA);
+      arrAMatching.append(rowA);
+      breakpoint() #Note to self, shouldn't the next line be  arrBMatching.extend(arrBWork[iBStart:iBEnd])
+      arrBMatching.append(arrBWork[iBStart:iBEnd])
+      arrBWork=arrBWork[:iBStart]+arrBWork[iBEnd:]
+    else: arrARem.append(rowA)
   arrBRem=arrBWork
   return arrAMatching, arrBMatching, arrARem, arrBRem
   
@@ -87,6 +112,9 @@ def extractMatchingOneToManyUnsortedFW(arrA, arrB, funVal, funB, funExtra):
     arrBMatchingMod.extend(rowB)
   return arrAMatchingMod, arrBMatchingMod, arrARem, arrBRem
 
+
+# Note 1!! The below test fails: funB is called with three arguments in my_bisect_left/my_bisect_right
+# Note 2!! extractMatchingOneToManyUnsortedF(W) is only used in renameFinishToMetaByFolder (which is not used in any launch.json-commands)
 
 # def funB(strB, l): 
 #   return strB[:l]
@@ -114,10 +142,11 @@ def extractMatchingOneToManyF(arrA, arrB, fun):
     if(intVal>0): arrARem.append(rowA); iA+=1     # B is ahead of A
     elif(intVal<0): arrBRem.append(rowB); iB+=1   # A is ahead of B
     elif(intVal==0): arrAMatching.append(rowA); arrBMatching.append(rowB); iB+=1; #iA+=1
-    else: print("error when comparing strings")
+    else: globvar.myConsole.error("error when comparing strings")
     
   return arrAMatching, arrBMatching, arrARem, arrBRem
 
+# Note! Never used.
 #extractMatchingOneToManyF(["aa","progC","qrs"], ["abc", "progC/abc", "progC/def", "progC/ghi", "ss"], funStrShortest)
 
 
@@ -173,34 +202,141 @@ def extractMatchingManyToManyF(arrA, arrB, fun):
         iATmp=iATmp+1
         if(iATmp==lenA): iA=iATmp; break
         rowATmp=arrA[iATmp]; valATmp=fun(rowATmp)
-        if(valATmp==valB): objAMatching[valATmp].append(rowATmp)
+        if(valATmp==valB):
+          objAMatching[valATmp].append(rowATmp)
         else: iA=iATmp; break
       while(1):
         iBTmp=iBTmp+1
         if(iBTmp==lenB): iB=iBTmp; break
         rowBTmp=arrB[iBTmp]; valBTmp=fun(rowBTmp)
-        if(valA==valBTmp): objBMatching[valBTmp].append(rowBTmp)
+        if(valA==valBTmp):
+          objBMatching[valBTmp].append(rowBTmp)
         else: iB=iBTmp; break
 
-    else: print("error when comparing strings")
+    else: globvar.myConsole.error("error when comparing strings")
     
   return objAMatching, objBMatching
 
 
-# def funStrShortest(rowA,rowB):
-#   strA=rowA; l=len(strA); strB=rowB[:l]
-#   if(strA<strB): return 1
-#   elif(strA>strB): return -1
-#   elif(strA==strB): return 0
-#   else: print("Error not lt, not gt and not equal???")
-def funInt(a,b):
-  if(a<b): return 1
-  elif(a>b): return -1
-  elif(a==b): return 0
-  else: print("Error not lt, not gt and not equal???")
 
 
 #extractMatchingManyToManyF([3,6,9], [2,3,8], lambda x: x)
 #extractMatchingManyToManyF([3,6,9], [2,3,3,8], lambda x: x)
 #extractMatchingManyToManyF([1,3,3,6,9], [2,3,3], lambda x: x)
 #extractMatchingManyToManyF(["aa","progC","qrs"], ["abc", "progC/abc", "progC/def", "progC/ghi", "ss"], funStrShortest)
+
+
+#######################################################################################
+# extractUniques
+#   extract uniques within a single array arr
+#######################################################################################
+def extractUniques(arr,arrKey):
+  if(not isinstance(arrKey, list)): arrKey=[arrKey]
+  objDup={};  arrUniq=[];  arrUniqified=[];
+  lenArr=len(arr)
+  if(lenArr==0): return arrUniq, objDup, arrUniqified
+  boDict=isinstance(arr[0], dict)
+  for i, row in enumerate(arr):
+    iNext=i+1
+    boMatch=True
+    if(iNext!=lenArr):
+      rowNext=arr[iNext]
+      for key in arrKey:
+        attr=row[key] if boDict else getattr(row, key)
+        attrNext=rowNext[key] if boDict else getattr(rowNext, key)
+        if(attrNext!=attr): boMatch=False
+    else: boMatch=False
+      # Create strAttr (key in objDup)
+    strAttr=""
+    for key in arrKey:
+      attr=row[key] if boDict else getattr(row, key)
+      strAttr+=str(attr)
+
+    if(boMatch):
+      if(strAttr in objDup): objDup[strAttr].append(row)
+      else: objDup[strAttr]=[row]
+    else:
+      #arrUniqified.append(copy.copy(row))
+      arrUniqified.append(row)
+      if(strAttr in objDup): objDup[strAttr].append(row)
+      else: arrUniq.append(row)
+
+  return arrUniq, objDup, arrUniqified
+
+# arrUniq, objDup, arrUniqified= extractUniques([{"a":1}, {"a":1}, {"a":2}], "a")
+# arrUniq, objDup, arrUniqified= extractUniques([{"a":1}, {"a":1}, {"a":2}, {"a":2}], "a")
+# arrUniq, objDup, arrUniqified= extractUniques([{"a":1}, {"a":1}, {"a":2}, {"a":3}], "a")
+
+
+
+# OTO=OneToOne, OTM=OneToMany, MTO=ManyToOne, MTM=ManyToMany
+# T\S    Null    One     Many
+# Null           Created Created
+# One    Deleted OTO     MTO
+# Many   Deleted OTM     MTM
+
+
+def objManyToManyRemoveEmpty(objA, objB):  # Modifies objA and objB
+  KeyDel=[]
+  for key, arrA in objA.items():
+    arrB=objB[key]; lenA=len(arrA); lenB=len(arrB)
+    if(lenA==0 and lenB==0): KeyDel.append(key)
+  for key in KeyDel:
+    del objA[key]; del objB[key] 
+
+
+  # objA, objB is the output of extractMatchingManyToManyF.
+  # Thus objA, objB has the same property keys.
+def convertObjManyToManyToMat(objA, objB):
+  ArrAOTO=[]; ArrBOTO=[]; ArrAOTM=[]; ArrBOTM=[]; ArrAMTO=[]; ArrBMTO=[]; ArrAMTM=[]; ArrBMTM=[]
+  ArrAOTNull=[]; ArrAMTNull=[]; ArrBNullTO=[]; ArrBNullTM=[]
+  arrAOTNull=[]; arrAMTNull=[]; arrBNullTO=[]; arrBNullTM=[]
+  arrAOTO=[]; arrBOTO=[]; arrAOTM=[]; arrBOTM=[]; arrAMTO=[]; arrBMTO=[]; arrAMTM=[]; arrBMTM=[]
+  for key, arrA in objA.items():
+    arrB=objB[key]
+    lenA=len(arrA); lenB=len(arrB)
+    if(lenA==0):
+      if(lenB==0): globvar.myConsole.error("lenA==0 and lenB==0"); breakpoint(); #del objA[key]; objB[key] 
+      elif(lenB==1): ArrBNullTO.append(arrB);  arrBNullTO.extend(arrB)
+      else: ArrBNullTM.append(arrB);  arrBNullTM.extend(arrB)
+    elif(lenA==1):
+      if(lenB==0): ArrAOTNull.append(arrA);  arrAOTNull.extend(arrA)
+      elif(lenB==1): ArrAOTO.append(arrA); ArrBOTO.append(arrB);    arrAOTO.extend(arrA); arrBOTO.extend(arrB)
+      else: ArrAOTM.append(arrA); ArrBOTM.append(arrB);    arrAOTM.extend(arrA); arrBOTM.extend(arrB)
+    else:
+      if(lenB==0): ArrAMTNull.append(arrA);  arrAMTNull.extend(arrA)
+      elif(lenB==1): ArrAMTO.append(arrA); ArrBMTO.append(arrB);    arrAMTO.extend(arrA); arrBMTO.extend(arrB)
+      else: ArrAMTM.append(arrA); ArrBMTM.append(arrB);    arrAMTM.extend(arrA); arrBMTM.extend(arrB)
+
+  arrARem=arrAMTNull+arrAOTNull
+  arrBRem=arrBNullTO+arrBNullTM
+  return SimpleNamespace(**{"ArrAOTO":ArrAOTO, "ArrBOTO":ArrBOTO, "ArrAOTM":ArrAOTM, "ArrBOTM":ArrBOTM, "ArrAMTO":ArrAMTO, "ArrBMTO":ArrBMTO, "ArrAMTM":ArrAMTM, "ArrBMTM":ArrBMTM, "arrARem":arrARem, "arrBRem":arrBRem, "arrAOTO":arrAOTO, "arrBOTO":arrBOTO, "arrAOTM":arrAOTM, "arrBOTM":arrBOTM, "arrAMTO":arrAMTO, "arrBMTO":arrBMTO, "arrAMTM":arrAMTM, "arrBMTM":arrBMTM,
+  "ArrAOTNull":ArrAOTNull, "ArrAMTNull":ArrAMTNull, "ArrBNullTO":ArrBNullTO, "ArrBNullTM":ArrBNullTM, "arrAOTNull":arrAOTNull, "arrAMTNull":arrAMTNull, "arrBNullTO":arrBNullTO, "arrBNullTM":arrBNullTM})
+
+
+
+def similar(a, b):
+  return SequenceMatcher(None, a, b).ratio()
+
+
+def markRelBest(ArrA, ArrB):
+  for i, arrA in enumerate(ArrA):
+    arrB=ArrB[i]; lenA=len(arrA); lenB=len(arrB)
+    jBest=-1; kBest=-1; fitBest=0
+    for j, elA in enumerate(arrA):
+      #bestAByB=[None]*lenB
+      for k, elB in enumerate(arrB):
+        strNameA=elA["strName"]; strNameB=elB["strName"]
+        rat=similar(strNameA, strNameB)
+        if(rat>fitBest): fitBest=rat; jBest=j; kBest=k
+    if(jBest>0): elABest=arrA.pop(jBest);  arrA.insert(0, elABest)
+    if(kBest>0): elBBest=arrB.pop(kBest);  arrB.insert(0, elBBest)
+
+
+
+# def rmFrArr(arrA, strPat):
+#   regPat=re.compile(strPat)
+#   for i, el in reversed(list(enumerate(arrA))):
+#     res=regPat.match(el["strName"])
+#     boMatch=bool(res)
+#     if(boMatch): del arrA[i]

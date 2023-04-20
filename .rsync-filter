@@ -1,0 +1,10 @@
+
+#Comment
+
+- /Source/
+- /Target/
+- rename*
+- result*
+- /__pycache__/
+
+
